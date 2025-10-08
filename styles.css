@@ -1,0 +1,28 @@
+.menu-transition {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.menu-open {
+    max-height: 500px;
+}
+
+h1, h2, p, #botao-historias, #botao-celebracoes, #botao-doacao{
+    font-family: 'Julius Sans One', sans-serif;
+}
+
+.definicao p{
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    color: oklch(14.5% 0 0);
+}
+
+.fade {
+    opacity: 1;
+    transition: opacity 0.7s ease-in-out;
+}
+
+.fade-hidden {
+    opacity: 0.7;
+}
