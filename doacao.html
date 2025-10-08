@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Igreja Santa Teresinha - Batismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="scripts.js" defer></script>
+</head>
+<body class="bg-white">
+    <div id="header"></div>
+    
+    <div id="titulo" class="flex flex-col items-center text-center">
+      <h1 class="mt-32 mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900">Ajude-nos a Evangelizar</h1>
+
+      <div class="definicao m-6 text-xl flex flex-col gap-5 md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl text-left">
+          <p class="text-red-900">Ao contribuir com a Paróquia Santa Teresinha, você ajuda a manter nossos serviços, 
+            atividades comunitárias e projetos sociais que transformam vidas. Sua doação é um gesto de fé, 
+            solidariedade e amor ao próximo.</p>
+  
+          <p class="text-red-900">
+          Cada contribuição, grande ou pequena, fortalece nossa missão de levar esperança, acolhimento e ensinamentos 
+          cristãos a todos. Juntos, podemos continuar a construir uma comunidade mais unida e cheia de fé.</p>
+  
+          <p class="text-neutral-900"><strong>Doe hoje e faça parte dessa missão!</strong></p>
+      </div>
+    </div>
+
+    <div class="flex justify-center">
+        <button id="btnPix" class="text-xl w-80 mt-10 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-2 py-2 rounded shadow">
+            Faça a sua doação!
+        </button>
+    </div>
+
+    <div 
+        id="pixContainer"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+
+        <div class="bg-white rounded-2xl shadow-xl p-6 relative w-80 text-center">
+          <!-- Botão de fechar -->
+          <button 
+            id="closePix"
+            class="absolute top-3 right-3 bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold hover:bg-red-700">
+            ✕
+          </button>
+
+          <h2 class="text-lg font-semibold mb-2">Ajude a Paróquia a Evangelizar!</h2>
+          <p class="text-sm text-gray-600 mb-4">Faça sua oferta pelo PIX</p>
+
+          <!-- QR Code -->
+          <img src="8d91c057-9a5c-4a25-a585-50e5ed133c44.png" alt="QR Code PIX" class="mx-auto w-48 h-48 mb-3">
+
+          <!-- Informações da chave PIX -->
+          <p class="text-sm text-gray-800">
+            <strong>Chave PIX:</strong> NONE<br>
+            PARÓQUIA SANTA TERESINHA<br>
+          </p>
+        </div>
+    </div>
+
+    <div id="footer"></div>
+
+    <script>
+    const btnPix = document.getElementById("btnPix");
+    const pixContainer = document.getElementById("pixContainer");
+    const closePix = document.getElementById("closePix");
+
+    btnPix.addEventListener("click", () => {
+      pixContainer.classList.add("flex");
+      pixContainer.classList.remove("hidden");
+    });
+
+    closePix.addEventListener("click", () => {
+      pixContainer.classList.add("hidden");
+    });
+
+    // Fecha o modal se clicar fora da área branca
+    pixContainer.addEventListener("click", (e) => {
+      if (e.target === pixContainer) {
+        pixContainer.classList.add("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

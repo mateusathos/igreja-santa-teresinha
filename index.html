@@ -14,56 +14,90 @@
 
   <div id="header"></div>
 
-  <div id="santa-teresinha-inicio" class=" flex justify-center">
+  <div id="santa-teresinha-inicio" class="flex justify-center relative">
     <img src="imgs/igreja-pc.jpeg" id="home-page" class="fade min-h-screen min-w-full max-h-screen object-cover">
 
     <p class="text-center font-bold border-2 border-emerald-700 min-w-72 absolute bottom-32 left-1/2 transform -translate-x-1/2 bg-emerald-950 text-white px-4 py-4 shadow">
       Bem-vindo à Paróquia <br>Santa Teresinha!
     </p>
-    
   </div>
 
-  <div id="cards" class="mt-6 flex flex-col gap-5">
+  <div id="cards" class="mt-10 flex flex-col gap-10 text-center">
+
     <div class="flex flex-col items-center gap-3">
       <h1 class="text-red-950 font-bold text-2xl md:text-3xl">Horário das Celebrações</h1>
-      
+
       <div class="flex flex-col items-center relative">
-        <a href="celebracoes.html">
-          <img src="imgs/missa-santa-teresinha.jpeg" alt="" class="border-4 border-red-950 max-w-72 md:max-w-md">
-        </a>
+        <img src="imgs/missa-santa-teresinha.jpeg" alt="" class="border-4 border-red-950 max-w-80 md:max-w-md">
         <a id="botao-celebracoes" href="celebracoes.html" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
-        Clique aqui
+          Clique aqui
         </a>
       </div>
     </div>
-  
+
     <div class="flex flex-col items-center gap-3">
-      <h1 class="mt-5 text-red-950 font-bold text-2xl md:text-3xl">Avisos paroquiais</h1>
-      
+      <h1 class="text-red-950 font-bold text-2xl md:text-3xl">Avisos Paroquiais</h1>
+
       <div class="flex flex-col items-center relative">
-        <img src="imgs/avisos-paroquiais.png" alt="" class="border-4 border-red-950 max-w-72 md:max-w-md">
-        <a id="botao-celebracoes" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
-        Clique aqui
+        <img src="imgs/avisos-paroquiais.png" alt="" class="max-w-80 border-4 border-red-950 md:max-w-md">
+        <a id="botao-celebracoes" href="avisos.html" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
+          Clique aqui
         </a>
       </div>
+
+      <button id="btnPix" class="text-xl w-80 mt-10 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-2 py-2 rounded shadow">
+        Faça a sua doação!
+      </button>
     </div>
-  
-    <div class="flex flex-col items-center gap-3">
-      <h1 class="mt-5 text-red-950 font-bold text-2xl">Faça sua doação</h1>
-      
-      <div class="flex flex-col items-center relative">
-        <a href="celebracoes.html">
-          <img src="imgs/missa-santa-teresinha.jpeg" alt="" class="border-4 border-red-950 max-w-72">
-        </a>
-        <a id="botao-celebracoes" href="celebracoes.html" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
-        Clique aqui
-        </a>
+
+    <div id="pixContainer" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+      <div class="bg-white rounded-2xl shadow-xl p-6 relative w-80 text-center">
+        <!-- Botão de fechar -->
+        <button id="closePix" class="absolute top-3 right-3 bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold hover:bg-red-700">
+          ✕
+        </button>
+
+        <h2 class="text-lg font-semibold mb-2">Ajude a Paróquia a Evangelizar!</h2>
+        <p class="text-sm text-gray-600 mb-4">Faça sua oferta pelo PIX</p>
+
+        <!-- QR Code -->
+        <img src="8d91c057-9a5c-4a25-a585-50e5ed133c44.png" alt="QR Code PIX" class="mx-auto w-48 h-48 mb-3">
+
+        <!-- Informações da chave PIX -->
+        <p class="text-sm text-gray-800">
+          <strong>Chave PIX:</strong> NONE<br>
+          PARÓQUIA SANTA TERESINHA<br>
+        </p>
       </div>
     </div>
+
   </div>
 
   <div id="footer"></div>
+
+  <script>
+    const btnPix = document.getElementById("btnPix");
+    const pixContainer = document.getElementById("pixContainer");
+    const closePix = document.getElementById("closePix");
+
+    btnPix.addEventListener("click", () => {
+      pixContainer.classList.add("flex");
+      pixContainer.classList.remove("hidden");
+    });
+
+    closePix.addEventListener("click", () => {
+      pixContainer.classList.add("hidden");
+      pixContainer.classList.remove("flex");
+    });
+
+    // Fecha o modal se clicar fora da área branca
+    pixContainer.addEventListener("click", (e) => {
+      if (e.target === pixContainer) {
+        pixContainer.classList.add("hidden");
+        pixContainer.classList.remove("flex");
+      }
+    });
+  </script>
+
 </body>
 </html>
-
-
