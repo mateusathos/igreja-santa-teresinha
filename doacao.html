@@ -10,30 +10,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <script src="scripts.js" defer></script>
 </head>
-<body class="bg-white">
+<body class="bg-white flex flex-col min-h-screen">
     <div id="header"></div>
     
-    <div id="titulo" class="flex flex-col items-center text-center">
-      <h1 class="mt-32 mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900">Ajude-nos a Evangelizar</h1>
-
-      <div class="definicao m-6 text-xl flex flex-col gap-5 md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl text-left">
-          <p class="text-red-900">Ao contribuir com a Paróquia Santa Teresinha, você ajuda a manter nossos serviços, 
-            atividades comunitárias e projetos sociais que transformam vidas. Sua doação é um gesto de fé, 
-            solidariedade e amor ao próximo.</p>
-  
-          <p class="text-red-900">
-          Cada contribuição, grande ou pequena, fortalece nossa missão de levar esperança, acolhimento e ensinamentos 
-          cristãos a todos. Juntos, podemos continuar a construir uma comunidade mais unida e cheia de fé.</p>
-  
-          <p class="text-neutral-900"><strong>Doe hoje e faça parte dessa missão!</strong></p>
-      </div>
-    </div>
-
-    <div class="flex justify-center">
-        <button id="btnPix" class="text-xl w-80 mt-10 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-2 py-2 rounded shadow">
-            Faça a sua doação!
-        </button>
-    </div>
+    <main class="flex-grow">
+        <div id="titulo" class="flex flex-col items-center text-center">
+          <h1 class="mt-28 mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900">Ajude-nos a Evangelizar</h1>
+    
+          <div class="definicao m-6 text-xl flex flex-col gap-5 md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl text-left">
+              <p class="text-red-900">Ao contribuir com a Paróquia Santa Teresinha, você ajuda a manter nossos serviços, 
+                atividades comunitárias e projetos sociais que transformam vidas. Sua doação é um gesto de fé, 
+                solidariedade e amor ao próximo.</p>
+      
+              <p class="text-red-900">
+              Cada contribuição, grande ou pequena, fortalece nossa missão de levar esperança, acolhimento e ensinamentos 
+              cristãos a todos. Juntos, podemos continuar a construir uma comunidade mais unida e cheia de fé.</p>
+      
+              <p class="text-neutral-900"><strong>Doe hoje e faça parte dessa missão!</strong></p>
+          </div>
+        </div>
+    
+        <div class="flex justify-center">
+            <button id="btnPix" class="text-xl w-80 mt-10 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
+                Faça uma doação clicando aqui
+            </button>
+        </div>
+    </main>
 
     <div 
         id="pixContainer"

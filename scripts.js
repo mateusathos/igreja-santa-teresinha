@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (btn && menu) {
           btn.addEventListener("click", () => {
             menu.classList.toggle("menu-open");
+            btn.classList.toggle("open");
           });
         }
       })
