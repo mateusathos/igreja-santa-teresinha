@@ -18,6 +18,18 @@ h1, h2, p, #botao-historias, #botao-celebracoes, #btnPix{
     color: oklch(14.5% 0 0);
 }
 
+#avisos p {
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    color: oklch(14.5% 0 0);
+}
+
+#oracao {
+    font-family: "Open Sans", sans-serif;
+    font-size: 16px;
+    color: oklch(14.5% 0 0);
+}
+
 .fade {
     opacity: 1;
     transition: opacity 0.7s ease-in-out;
