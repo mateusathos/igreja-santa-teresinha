@@ -7,6 +7,17 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(data => {
         headerContainer.innerHTML = data;
 
+        // === Destacar página ativa ===
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const menuLinks = document.querySelectorAll('header a[href]');
+        
+        menuLinks.forEach(link => {
+          const href = link.getAttribute('href');
+          if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+            link.classList.add('active');
+          }
+        });
+
         // === Menu Mobile (só roda depois que o header é carregado) ===
         const btn = document.getElementById("menu-btn");
         const menu = document.getElementById("mobile-menu");
@@ -55,4 +66,29 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   setInterval(trocarImagem, 6000);
+
+  // === Animações de fade-in ao scroll ===
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  // Observar elementos com classe fade-in
+  document.querySelectorAll('.fade-in').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Observar cards e imagens
+  document.querySelectorAll('#cards > div, .image-card, #avisos > div').forEach(el => {
+    observer.observe(el);
+  });
 });

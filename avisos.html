@@ -11,22 +11,25 @@
   <script src="scripts.js" defer></script>
   <link rel="icon" href="imgs/logo-2.png" type="image/png" sizes="32x32">
 </head>
-<body class="bg-white flex flex-col min-h-screen">
+<body class="bg-gradient-to-br from-white via-red-50/20 to-white flex flex-col min-h-screen">
 
   <div id="header"></div>
 
-  <main class=" mt-28 space-y-4 flex-grow flex flex-col items-center">
+  <main class="mt-28 space-y-6 flex-grow flex flex-col items-center px-4">
 
-    <h1 class="mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900">Avisos Paroquiais</h1>
-    <p class="font-bold text-sm text-black/60">Última Atualização: 19/12/2025</p>
-    <!-- Aviso 1 -->
+    <h1 class="page-title mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900 tracking-wide fade-in">Avisos Paroquiais</h1>
+    <div class="bg-gradient-to-r from-red-500 to-red-900 text-white font-bold text-sm px-4 py-2 rounded-full shadow-lg fade-in">
+      Última Atualização: 19/12/2025
+    </div>
 
     <h1 class="text-lg hidden">Não há avisos no momento.</h1>
 
-    <div id="avisos" class="flex flex-col gap-7 mx-6 lg:max-w-2xl">
-      <div class="bg-white rounded-lg shadow p-4">
-        <h2 class="text-lg font-semibold text-red-900">Missas na Comunidade Nossa Senhora de Guadalupe</h2>
-        <p class=" text-sm mt-2">Informamos que a partir de Janeiro, em todos os sábados, haverá Santa Missa na Comunidade Nossa Senhora de Guadalupe às 17:30.</p>
+    <div id="avisos" class="flex flex-col gap-6 mx-6 lg:max-w-2xl w-full fade-in">
+      <div class="bg-gradient-to-br from-white to-red-50 rounded-2xl shadow-lg hover:shadow-2xl p-6 border-l-4 border-red-900 transform transition-all duration-300 hover:translate-x-2">
+        <div>
+        <h2 class="text-xl font-bold text-red-900 mb-2">Missas na Comunidade Nossa Senhora de Guadalupe</h2>
+          <p class="text-base mt-2 leading-relaxed text-gray-700">Informamos que a partir de Janeiro, em todos os sábados, haverá Santa Missa na Comunidade Nossa Senhora de Guadalupe às 17:30.</p>
+        </div>
       </div>
     </div>
   </main>

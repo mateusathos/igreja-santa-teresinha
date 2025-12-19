@@ -11,68 +11,82 @@
     <script src="scripts.js" defer></script>
     <link rel="icon" href="imgs/logo-2.png" type="image/png" sizes="32x32">
 </head>
-<body class="bg-white">
+<body class="bg-gradient-to-br from-white via-red-50/20 to-white">
     <div id="header"></div>
 
     <div class="flex flex-col items-center justify-center">
-        <div id="titulo" class="flex justify-center flex-col">
-            <h1 class="mt-28 xl:mt-28 mx-4 text-center text-3xl font-bold text-red-900">Horário das Celebrações</h1>
+        <div id="titulo" class="flex justify-center flex-col fade-in">
+            <h1 class="page-title mt-28 xl:mt-28 mx-4 text-center text-3xl xl:text-4xl font-bold text-red-900 tracking-wide">Horário das Celebrações</h1>
         </div>
 
         <div class="max-w-2xl">
-            <div id="missas-de-natal" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/missa-natal.jfif" alt="" class="rounded-lg">
+            <div id="missas-de-natal" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/missa-natal.jfif" alt="Missa de Natal" class="w-full">
+                </div>
             </div>
         
-            <div id="comunidade-santa-teresinha" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/santa-teresinha.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex flex-col gap-3 mt-4 border-b-4 pb-5 border-red-950 font-bold">
-                    <div class="flex gap-1">
+            <div id="comunidade-santa-teresinha" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/santa-teresinha.jpg" alt="Comunidade Santa Teresinha" class="w-full">
+                </div>
+                <div class="text-base flex flex-col gap-3 mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg font-bold shadow-md">
+                    <div class="flex gap-2 items-center">
                         <p class="text-yellow-600">Quarta:</p>
                         <p class="text-neutral-900">Adoração e Bênção do Santíssimo às 19:30</p>
                     </div>
-                    <div class="flex gap-1">
+                    <div class="flex gap-2 items-center">
                         <p class="text-red-800">Endereço:</p>
                         <p class="text-neutral-900">Rua Alemanha, 219, Baronesa, Santa Luzia - MG</p>
                     </div>
                 </div>
             </div>
     
-            <div id="comunidade-sao-francisco" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/sao-francisco.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex font-bold gap-3 mt-4 border-b-4 pb-5 border-red-950">
+            <div id="comunidade-sao-francisco" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/sao-francisco.jpg" alt="Comunidade São Francisco" class="w-full">
+                </div>
+                <div class="text-base flex font-bold gap-2 items-center mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg shadow-md">
                     <p class="text-red-800">Endereço:</p>
                     <p class="text-neutral-900">Rua China, 328, Baronesa, Santa Luzia - MG</p>
                 </div>
             </div>
     
-            <div id="comunidade-sao-jose" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/sao-jose.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex font-bold gap-3 mt-4 border-b-4 pb-5 border-red-950">
+            <div id="comunidade-sao-jose" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/sao-jose.jpg" alt="Comunidade São José" class="w-full">
+                </div>
+                <div class="text-base flex font-bold gap-2 items-center mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg shadow-md">
                     <p class="text-red-800">Endereço:</p>
                     <p class="text-neutral-900">Rua Ouro Preto, 86, Luxemburgo, Santa Luzia - MG</p>
                 </div>
             </div>
     
-            <div id="comunidade-santo-antonio" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/santo-antonio.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex font-bold gap-3 mt-4 border-b-4 pb-5 border-red-950">
+            <div id="comunidade-santo-antonio" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/santo-antonio.jpg" alt="Comunidade Santo Antônio" class="w-full">
+                </div>
+                <div class="text-base flex font-bold gap-2 items-center mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg shadow-md">
                     <p class="text-red-800">Endereço:</p>
                     <p class="text-neutral-900">Beco Santo Antônio, 13, Morro Santo Antônio, Baronesa, Santa Luzia - MG</p>
                 </div>
             </div>
     
-            <div id="comunidade-senhora-do-rosario" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/senhora-do-rosario.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex font-bold gap-3 mt-4 border-b-4 pb-5 border-red-950">
+            <div id="comunidade-senhora-do-rosario" class="mt-8 mr-4 ml-4 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/senhora-do-rosario.jpg" alt="Comunidade Nossa Senhora do Rosário" class="w-full">
+                </div>
+                <div class="text-base flex font-bold gap-2 items-center mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg shadow-md">
                     <p class="text-red-800">Endereço:</p>
                     <p class="text-neutral-900">Rua Líbia, 1229, Morro Santo Antônio, Baronesa, Santa Luzia - MG</p>
                 </div>
             </div>
     
-            <div id="comunidade-senhora-de-guadalupe" class="mt-5 mr-4 ml-4">
-                <img src="imgs/horarios/senhora-de-guadalupe.jpg" alt="" class="rounded-lg">
-                <div class="text-base flex font-bold gap-3 mt-4">
+            <div id="comunidade-senhora-de-guadalupe" class="mt-8 mr-4 ml-4 mb-8 fade-in">
+                <div class="rounded-2xl overflow-hidden shadow-xl">
+                    <img src="imgs/horarios/senhora-de-guadalupe.jpg" alt="Comunidade Nossa Senhora de Guadalupe" class="w-full">
+                </div>
+                <div class="text-base flex font-bold gap-2 items-center mt-5 border-l-4 border-red-950 pl-4 py-3 bg-white/50 rounded-r-lg shadow-md">
                     <p class="text-red-800">Endereço:</p>
                     <p class="text-neutral-900">Av. Raimundo Diniz Lima, 411, Liberdade, Santa Luzia - MG (Residência de Kécia e Éric)</p>
                 </div>

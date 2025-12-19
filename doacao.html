@@ -16,9 +16,9 @@
     
     <main class="flex-grow">
         <div id="titulo" class="flex flex-col items-center text-center">
-          <h1 class="mt-28 mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900">Ajude-nos a Evangelizar</h1>
+          <h1 class="page-title mt-28 mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900 tracking-wide fade-in">Ajude-nos a Evangelizar</h1>
     
-          <div class="definicao m-6 text-xl flex flex-col gap-5 md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl text-left">
+          <div class="definicao m-6 text-xl flex flex-col gap-5 md:max-w-md lg:max-w-lg xl:max-w-xl 2xl:max-w-2xl text-left fade-in">
               <p class="text-red-900">Ao contribuir com a Paróquia Santa Teresinha, você ajuda a manter nossos serviços, 
                 atividades comunitárias e projetos sociais que transformam vidas. Sua doação é um gesto de fé, 
                 solidariedade e amor ao próximo.</p>
@@ -31,7 +31,7 @@
           </div>
         </div>
     
-        <div class="flex justify-center">
+        <div class="flex justify-center fade-in">
             <button id="btnPix" class="text-xl w-80 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
                 Faça uma doação clicando aqui
             </button>
@@ -40,27 +40,31 @@
 
     <div 
         id="pixContainer"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+        class="hidden fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm items-center justify-center z-50 transition-all duration-300">
 
-        <div class="bg-white rounded-2xl shadow-xl p-6 relative w-80 text-center">
+        <div class="modal-content bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 relative w-80 md:w-96 text-center border-4 border-red-950">
           <!-- Botão de fechar -->
           <button 
             id="closePix"
-            class="absolute top-3 right-3 bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold hover:bg-red-700">
+            class="absolute top-4 right-4 bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-red-700 transition-all duration-300 hover:rotate-90 shadow-lg">
             ✕
           </button>
 
-          <h2 class="text-lg font-semibold mb-2">Ajude a Paróquia a Evangelizar!</h2>
-          <p class="text-sm text-gray-600 mb-4">Faça sua oferta pelo PIX</p>
+          <h2 class="text-xl font-bold mb-3 text-red-950">Ajude a Paróquia a Evangelizar!</h2>
+          <p class="text-sm text-gray-600 mb-5">Faça sua oferta pelo PIX</p>
 
           <!-- QR Code -->
-          <img src="imgs/qr-code.jpg" alt="QR Code PIX" class="mx-auto w-48 h-48 mb-3">
+          <div class="bg-white p-4 rounded-2xl shadow-inner mb-4 mx-auto inline-block">
+            <img src="imgs/qr-code.jpg" alt="QR Code PIX" class="w-48 h-48 rounded-lg">
+          </div>
 
           <!-- Informações da chave PIX -->
-          <p class="text-sm text-gray-800">
-            <strong>Chave PIX:</strong> 17.505.249/0268-94<br>
-            <strong>Tipo de Chave:</strong> CNPJ<br>
-          </p>
+          <div class="bg-red-950/10 rounded-xl p-4 border-2 border-red-950/20">
+            <p class="text-sm text-gray-800">
+              <strong class="text-red-950">Chave PIX:</strong> 17.505.249/0268-94<br>
+              <strong class="text-red-950">Tipo de Chave:</strong> CNPJ
+            </p>
+          </div>
         </div>
     </div>
 

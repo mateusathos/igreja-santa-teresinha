@@ -15,60 +15,67 @@
 
   <div id="header"></div>
 
-  <div id="santa-teresinha-inicio" class="pt-20 flex justify-center relative">
+  <div id="santa-teresinha-inicio" class="pt-20 flex justify-center relative overflow-hidden">
     <img src="imgs/igreja.jpeg" id="home-page" class="2xl:max-w-2xl 2xl:max-h-10 xl:min-w-80 fade min-h-[calc(100vh-5rem)] min-w-full max-h-screen object-cover">
+    
+    <!-- Overlay gradiente para melhor contraste -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40"></div>
 
-    <p class="text-center font-bold border-2 border-red-700 min-w-72 absolute bottom-40 left-1/2 transform -translate-x-1/2 bg-red-950/70 text-white px-4 py-4 shadow">
+    <p class="text-center font-bold border-2 border-red-700 min-w-72 absolute bottom-40 left-1/2 transform -translate-x-1/2 bg-red-950/80 backdrop-blur-sm text-white px-6 py-5 shadow-2xl rounded-lg hover:scale-105 transition-all duration-300">
       Bem-vindo à Paróquia <br>Santa Teresinha!
     </p>
   </div>
 
-  <div id="cards" class="mt-10 flex flex-col gap-10 text-center">
+  <div id="cards" class="mt-10 flex flex-col gap-10 text-center px-4">
 
-    <div class="flex flex-col items-center gap-3">
-      <h1 class="text-red-950 font-bold text-2xl md:text-3xl">Horário das Celebrações</h1>
+    <div class="flex flex-col items-center gap-4 fade-in">
+      <h1 class="text-red-950 font-bold text-2xl md:text-3xl tracking-wide">Horário das Celebrações</h1>
 
-      <div class="flex flex-col items-center relative">
-        <img src="imgs/missa.png" alt="" class="border-4 border-red-950 max-w-80 md:max-w-md">
-        <a id="botao-celebracoes" href="celebracoes.html" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
+      <div class="flex flex-col items-center relative image-card group">
+        <img src="imgs/missa.png" alt="Horário das Celebrações" class="border-4 border-red-950 max-w-80 md:max-w-md rounded-xl shadow-lg">
+        <a id="botao-celebracoes" href="celebracoes.html" class="font-bold bottom-5 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-6 py-3 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300">
           Clique aqui
         </a>
       </div>
     </div>
 
-    <div class="flex flex-col items-center gap-3">
-      <h1 class="text-red-950 font-bold text-2xl md:text-3xl">Avisos Paroquiais</h1>
+    <div class="flex flex-col items-center gap-4 fade-in">
+      <h1 class="text-red-950 font-bold text-2xl md:text-3xl tracking-wide">Avisos Paroquiais</h1>
 
-      <div class="flex flex-col items-center relative">
-        <img src="imgs/avisos-paroquiais.png" alt="" class="max-w-80 border-4 border-red-950 md:max-w-md">
-        <a id="botao-celebracoes" href="avisos.html" class="font-bold bottom-4 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
+      <div class="flex flex-col items-center relative image-card group">
+        <img src="imgs/avisos-paroquiais.png" alt="Avisos Paroquiais" class="max-w-80 border-4 border-red-950 md:max-w-md rounded-xl shadow-lg">
+        <a id="botao-avisos" href="avisos.html" class="font-bold bottom-5 absolute border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-6 py-3 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300">
           Clique aqui
         </a>
       </div>
 
-      <button id="btnPix" class="text-xl w-80 mt-10 font-bold bottom-4 border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-4 py-2 rounded shadow">
+      <button id="btnPix" class="w-80 mt-10 font-bold border-2 border-red-900 hover:bg-red-500 bg-red-950 text-white px-6 py-3 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300">
         Faça uma doação clicando aqui
       </button>
     </div>
 
-    <div id="pixContainer" class="hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
-      <div class="bg-white rounded-2xl shadow-xl p-6 relative w-80 text-center">
+    <div id="pixContainer" class="hidden fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm items-center justify-center z-50 transition-all duration-300">
+      <div class="modal-content bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-8 relative w-80 md:w-96 text-center border-4 border-red-950">
         <!-- Botão de fechar -->
-        <button id="closePix" class="absolute top-3 right-3 bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold hover:bg-red-700">
+        <button id="closePix" class="absolute top-4 right-4 bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold hover:bg-red-700 transition-all duration-300 hover:rotate-90 shadow-lg">
           ✕
         </button>
 
-        <h2 class="text-lg font-semibold mb-2">Ajude a Paróquia a Evangelizar!</h2>
-        <p class="text-sm text-gray-600 mb-4">Faça sua oferta pelo PIX</p>
+        <h2 class="text-xl font-bold mb-3 text-red-950">Ajude a Paróquia a Evangelizar!</h2>
+        <p class="text-sm text-gray-600 mb-5">Faça sua oferta pelo PIX</p>
 
         <!-- QR Code -->
-        <img src="imgs/qr-code.jpg" alt="QR Code PIX" class="mx-auto w-48 h-48 mb-3">
+        <div class="bg-white p-4 rounded-2xl shadow-inner mb-4 mx-auto inline-block">
+          <img src="imgs/qr-code.jpg" alt="QR Code PIX" class="w-48 h-48 rounded-lg">
+        </div>
 
         <!-- Informações da chave PIX -->
-        <p class="text-sm text-gray-800">
-          <strong>Chave PIX:</strong> 17.505.249/0268-94<br>
-          <strong>Tipo de Chave:</strong> CNPJ<br>
-        </p>
+        <div class="bg-red-950/10 rounded-xl p-4 border-2 border-red-950/20">
+          <p class="text-sm text-gray-800">
+            <strong class="text-red-950">Chave PIX:</strong> 17.505.249/0268-94<br>
+            <strong class="text-red-950">Tipo de Chave:</strong> CNPJ
+          </p>
+        </div>
       </div>
     </div>
 

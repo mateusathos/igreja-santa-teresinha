@@ -1,3 +1,9 @@
+/* Scroll suave para toda a página */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Transição de menu mobile */
 .menu-transition {
     max-height: 0;
     overflow: hidden;
@@ -8,7 +14,8 @@
     max-height: 500px;
 }
 
-h1, h2, p, #botao-historias, #botao-celebracoes, #btnPix{
+/* Fontes */
+h1, h2, p, #botao-historias, #botao-celebracoes, #botao-avisos, #btnPix{
     font-family: 'Julius Sans One', sans-serif;
 }
 
@@ -16,20 +23,24 @@ h1, h2, p, #botao-historias, #botao-celebracoes, #btnPix{
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
     color: oklch(14.5% 0 0);
+    line-height: 1.7;
 }
 
 #avisos p {
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
     color: oklch(14.5% 0 0);
+    line-height: 1.6;
 }
 
 #oracao {
     font-family: "Open Sans", sans-serif;
     font-size: 16px;
     color: oklch(14.5% 0 0);
+    line-height: 1.7;
 }
 
+/* Animações de fade */
 .fade {
     opacity: 1;
     transition: opacity 0.7s ease-in-out;
@@ -39,16 +50,220 @@ h1, h2, p, #botao-historias, #botao-celebracoes, #btnPix{
     opacity: 0.7;
 }
 
+/* Animação de fade-in para elementos ao carregar */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+}
+
+/* Animação para o modal PIX */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Menu mobile - animação do hamburguer */
 #menu-btn.open span:nth-child(1) {
     transform: translateY(12px) rotate(45deg);
-  }
+}
 #menu-btn.open span:nth-child(2) {
-opacity: 0;
+    opacity: 0;
 }
 #menu-btn.open span:nth-child(3) {
-transform: translateY(-12px) rotate(-45deg);
+    transform: translateY(-12px) rotate(-45deg);
 }
 
 #menu-btn span {
-transition: all 0.7s ease;
+    transition: all 0.7s ease;
+}
+
+/* Efeitos hover para links do menu */
+header a {
+    transition: all 0.3s ease;
+}
+
+header a:hover {
+    transform: translateY(-2px);
+}
+
+/* Estilo para página ativa no menu */
+header a.active p {
+    color: white;
+    border-bottom-color: #ef4444;
+    font-weight: bold;
+}
+
+/* Efeitos para botões */
+button, a[class*="botao"], #botao-celebracoes, #botao-avisos, #btnPix {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover, a[class*="botao"]:hover, #botao-celebracoes:hover, #botao-avisos:hover, #btnPix:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(127, 29, 29, 0.3);
+}
+
+button:active, a[class*="botao"]:active, #botao-celebracoes:active, #botao-avisos:active, #btnPix:active {
+    transform: translateY(0);
+}
+
+/* Efeito ripple nos botões */
+button::before, #botao-celebracoes::before, #botao-avisos::before, #btnPix::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+button:active::before, #botao-celebracoes:active::before, #botao-avisos:active::before, #btnPix:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Sombras suaves para imagens */
+img {
+    transition: all 0.3s ease;
+}
+
+/* Cards de avisos com efeito hover */
+#avisos > div {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+#avisos > div:hover {
+    transform: translateX(5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-left-color: #7f1d1d;
+}
+
+/* Footer com gradiente sutil */
+footer {
+    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
+    position: relative;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* Links do footer com efeito hover */
+footer a {
+    transition: all 0.3s ease;
+}
+
+footer a:hover {
+    transform: translateX(5px);
+    opacity: 0.8;
+}
+
+/* Header com efeito glassmorphism sutil */
+header {
+    backdrop-filter: blur(10px);
+    background: rgba(127, 29, 29, 0.98);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Títulos com animação de underline */
+h1 {
+    position: relative;
+    display: inline-block;
+}
+
+/* Efeito underline para títulos principais */
+.page-title {
+    position: relative;
+    display: inline-block;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #7f1d1d, transparent);
+    border-radius: 2px;
+}
+
+/* Efeito para imagens de comunidades */
+#comunidade-santa-teresinha img,
+#comunidade-sao-francisco img,
+#comunidade-sao-jose img,
+#comunidade-santo-antonio img,
+#comunidade-senhora-do-rosario img,
+#comunidade-senhora-de-guadalupe img {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeito para as divisórias de endereço */
+.border-b-4, .border-red-950 {
+    transition: all 0.3s ease;
+}
+
+/* Melhoria visual para textos de endereço */
+div[class*="flex gap-3 mt-4"] {
+    transition: all 0.3s ease;
+}
+
+/* Efeito para o logo no header */
+header img {
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+header img:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* Ícones do footer com efeito hover */
+footer img {
+    transition: all 0.3s ease;
+}
+
+footer img:hover {
+    transform: scale(1.1) rotate(5deg);
+    filter: brightness(1.2);
+}
+
+/* Smooth scroll para navegação */
+* {
+    scroll-margin-top: 100px;
 }
