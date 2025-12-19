@@ -165,20 +165,9 @@ img {
     border-left-color: #7f1d1d;
 }
 
-/* Footer com gradiente sutil */
+/* Footer com fundo sólido igual ao header */
 footer {
-    background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #7f1d1d 100%);
     position: relative;
-}
-
-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 /* Links do footer com efeito hover */
