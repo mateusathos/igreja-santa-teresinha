@@ -15,7 +15,7 @@ html {
 }
 
 /* Fontes */
-h1, h2, p, #botao-historias, #botao-celebracoes, #botao-avisos, #btnPix{
+h1, h2, p, #botao-historias, #botao-celebracoes, #botao-avisos, #btnPix, #ultima-atualizacao{
     font-family: 'Julius Sans One', sans-serif;
 }
 
