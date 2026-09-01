@@ -12,13 +12,13 @@ module.exports = async function handler(req, res) {
     await ensureAvisosTable();
 
     const result = await getDb().execute(`
-      SELECT id, titulo, descricao, ativo, criado_em, atualizado_em
+      SELECT id, titulo, descricao, imagem_url, imagem_pathname, ativo, criado_em, atualizado_em
       FROM avisos
       WHERE ativo = 1
       ORDER BY datetime(criado_em) DESC, id DESC
     `);
 
-    const avisos = result.rows.map(rowToAviso);
+    const avisos = result.rows.map(rowToAviso).map(({ imagem_pathname, ...aviso }) => aviso);
     const ultimaAtualizacao = avisos.reduce((maisRecente, aviso) => {
       const data = aviso.atualizado_em || aviso.criado_em;
       return !maisRecente || data > maisRecente ? data : maisRecente;

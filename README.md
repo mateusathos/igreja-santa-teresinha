@@ -36,6 +36,7 @@ Principais características:
 ├── index.html
 ├── admin.html
 ├── admin.js
+├── admin.bundle.js
 ├── celebracoes.html
 ├── avisos.html
 ├── avisos.js
@@ -60,7 +61,8 @@ Principais características:
 │       ├── avisos.js
 │       ├── login.js
 │       ├── logout.js
-│       └── session.js
+│       ├── session.js
+│       └── upload.js
 ├── components/
 │   ├── header.html
 │   └── footer.html
@@ -92,6 +94,7 @@ Principais características:
 - **Google Fonts**
 - **Vercel Functions** em `api/`
 - **Turso DB** via `@libsql/client`
+- **Vercel Blob** para imagens dos avisos
 
 > Observação: embora exista um `tailwind.config.js`, o projeto utiliza Tailwind por CDN nos arquivos HTML.
 
@@ -154,6 +157,7 @@ Responsável pelo painel administrativo:
 - Mostrar/ocultar senha com botão de ícone de olho
 - Listar avisos atuais
 - Criar, editar e excluir avisos
+- Anexar ou remover uma imagem opcional com prévia
 - Encerrar sessão com o botão `Sair`
 
 ### `styles.css`
@@ -186,6 +190,7 @@ Fluxo administrativo:
 - Sem sessão válida, a interface exibe a tela de login
 - Com sessão válida, a interface lista os avisos atuais
 - Criação, edição e exclusão passam por `api/admin/avisos.js`
+- Imagens são processadas no navegador e enviadas diretamente ao Vercel Blob
 
 As rotas administrativas exigem sessão válida. O endpoint público não exige autenticação.
 
@@ -219,8 +224,12 @@ Campos principais:
 - `ativo`
 - `criado_em`
 - `atualizado_em`
+- `imagem_url`
+- `imagem_pathname`
 
 A página pública usa apenas avisos ativos. O painel administrativo trabalha com a lista completa e permite remover registros.
+
+As imagens são armazenadas em um Blob público e exibidas com `object-contain`, preservando integralmente formatos verticais e horizontais. O Turso mantém somente a URL e o pathname do arquivo. Ao substituir a imagem ou excluir o aviso, a API remove o Blob anterior.
 
 ---
 
@@ -228,7 +237,7 @@ A página pública usa apenas avisos ativos. O painel administrativo trabalha co
 
 O deploy principal é feito na Vercel. O projeto combina páginas HTML estáticas, arquivos JS/CSS públicos e funções serverless em `api/`.
 
-As variáveis sensíveis ficam no ambiente da Vercel e não são expostas ao navegador. O navegador conversa com as APIs internas do projeto, e as APIs fazem a comunicação com o Turso.
+As variáveis sensíveis ficam no ambiente da Vercel e não são expostas ao navegador. O navegador conversa com as APIs internas do projeto, e as APIs fazem a comunicação com o Turso e autorizam uploads diretos para o Vercel Blob.
 
 ---
 
@@ -237,5 +246,4 @@ As variáveis sensíveis ficam no ambiente da Vercel e não são expostas ao nav
 - Centralizar dados de contato/PIX em único arquivo para evitar duplicação
 - Padronizar caminhos de imagens (algumas páginas usam `../imgs/...` e outras `imgs/...`)
 - Adicionar opção de ativar/desativar avisos sem excluir
-- Adicionar upload de imagem para avisos
 - Adicionar auditoria simples de alterações administrativas

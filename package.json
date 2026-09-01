@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "esbuild admin.js --bundle --minify --platform=browser --format=iife --outfile=admin.bundle.js",
     "dev": "npx vercel dev",
     "start": "npx vercel dev"
   },
   "dependencies": {
-    "@libsql/client": "^0.15.15"
+    "@libsql/client": "^0.15.15",
+    "@vercel/blob": "^2.8.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }
