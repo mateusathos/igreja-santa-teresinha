@@ -6,7 +6,7 @@ Site institucional da **Paróquia Santa Teresinha**, publicado em:
 
 O projeto é um site em HTML/CSS/JavaScript hospedado na Vercel, com foco em divulgação pastoral, horários de celebrações, avisos, informações sacramentais, contatos e doações.
 
-Além das páginas públicas, o projeto possui um painel administrativo para gerenciar avisos paroquiais usando Turso DB e Vercel Functions.
+Além das páginas públicas, o projeto possui um painel administrativo para gerenciar avisos e a programação das comunidades usando Turso DB e Vercel Functions.
 
 ---
 
@@ -25,7 +25,7 @@ Principais características:
 - Modal de doação via PIX (na home e na página de doação)
 - URLs limpas na Vercel, como `/avisos`, `/admin` e `/celebracoes`
 - Painel administrativo com login e sessão persistente
-- CRUD de avisos paroquiais com Turso DB
+- CRUD de avisos, comunidades, celebrações e atividades com Turso DB
 
 ---
 
@@ -36,8 +36,10 @@ Principais características:
 ├── index.html
 ├── admin.html
 ├── admin.js
+├── admin-programacao.js
 ├── admin.bundle.js
 ├── celebracoes.html
+├── programacoes.js
 ├── avisos.html
 ├── avisos.js
 ├── confissao.html
@@ -53,12 +55,14 @@ Principais características:
 ├── package.json
 ├── api/
 │   ├── avisos.js
+│   ├── programacoes.js
 │   ├── _lib/
 │   │   ├── auth.js
 │   │   ├── db.js
 │   │   └── http.js
 │   └── admin/
 │       ├── avisos.js
+│       ├── programacoes.js
 │       ├── login.js
 │       ├── logout.js
 │       ├── session.js
@@ -73,9 +77,9 @@ Principais características:
 ### Páginas
 
 - `/` (`index.html`) — página inicial com destaque de celebrações, avisos e botão de doação
-- `/admin` (`admin.html`) — painel administrativo para gerenciar avisos
+- `/admin` (`admin.html`) — painel administrativo para gerenciar avisos e programação
 - `/avisos` (`avisos.html`) — avisos paroquiais carregados pela API
-- `/celebracoes` (`celebracoes.html`) — horários e endereços das comunidades
+- `/celebracoes` (`celebracoes.html`) — celebrações e atividades carregadas dinamicamente
 - `/confissao` (`confissao.html`) — explicação e orientações sobre confissão
 - `/batismo` (`batismo.html`) — conteúdo e contato para preparação do batismo
 - `/crisma` (`crisma.html`) — conteúdo e contato para preparação da crisma
@@ -160,6 +164,14 @@ Responsável pelo painel administrativo:
 - Anexar ou remover uma imagem opcional com prévia
 - Encerrar sessão com o botão `Sair`
 
+### `programacoes.js` e `admin-programacao.js`
+
+- `programacoes.js` carrega a programação pública e agrupa as atividades por comunidade
+- `admin-programacao.js` controla a aba administrativa de programação
+- A interface aceita recorrências semanais, mensais, datas específicas e descrições personalizadas
+- Cada atividade possui comunidade, nome, horário e observação opcional
+- O cadastro de comunidades mantém nome, endereço, ordem de exibição e visibilidade
+
 ### `styles.css`
 
 Contém estilos e animações complementares:
@@ -196,6 +208,26 @@ As rotas administrativas exigem sessão válida. O endpoint público não exige 
 
 ---
 
+## Arquitetura da programação
+
+Os horários de missas e demais atividades são armazenados como dados estruturados no Turso, em vez de imagens estáticas.
+
+Fluxo público:
+
+- `celebracoes.html` carrega `programacoes.js`
+- `programacoes.js` consulta `GET /api/programacoes`
+- A API retorna comunidades ativas e suas atividades ativas
+- O navegador agrupa e ordena os registros para exibição responsiva
+
+Fluxo administrativo:
+
+- A aba `Programação` do painel consulta `GET /api/admin/programacoes`
+- A mesma rota recebe criação, edição e exclusão de comunidades e atividades
+- O formulário adapta os campos ao tipo de recorrência e mostra uma prévia antes de salvar
+- Comunidades com atividades vinculadas não podem ser excluídas
+
+---
+
 ## Autenticação administrativa
 
 O login administrativo usa senha única e sessão persistente por cookie HTTP-only assinado.
@@ -214,7 +246,7 @@ O cookie é assinado com um segredo de servidor, tem `HttpOnly`, `SameSite=Lax` 
 
 ## Persistência
 
-O Turso DB armazena os avisos na tabela `avisos`, criada automaticamente pelas APIs quando necessário.
+O Turso DB armazena os avisos, as comunidades e suas atividades. As tabelas são criadas automaticamente pelas APIs quando necessário.
 
 Campos principais:
 
@@ -228,6 +260,8 @@ Campos principais:
 - `imagem_pathname`
 
 A página pública usa apenas avisos ativos. O painel administrativo trabalha com a lista completa e permite remover registros.
+
+As tabelas `comunidades` e `programacoes` representam a programação paroquial. A relação entre elas permite manter múltiplas atividades por comunidade, com ordenação e visibilidade independentes. Na primeira inicialização, os horários antes publicados nas imagens são migrados como registros editáveis.
 
 As imagens são armazenadas em um Blob público e exibidas com `object-contain`, preservando integralmente formatos verticais e horizontais. O Turso mantém somente a URL e o pathname do arquivo. Ao substituir a imagem ou excluir o aviso, a API remove o Blob anterior.
 
@@ -245,5 +279,5 @@ As variáveis sensíveis ficam no ambiente da Vercel e não são expostas ao nav
 
 - Centralizar dados de contato/PIX em único arquivo para evitar duplicação
 - Padronizar caminhos de imagens (algumas páginas usam `../imgs/...` e outras `imgs/...`)
-- Adicionar opção de ativar/desativar avisos sem excluir
+- Expor na interface a opção de ativar/desativar atividades sem excluir
 - Adicionar auditoria simples de alterações administrativas

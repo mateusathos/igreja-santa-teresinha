@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="imgs/logo-2.png" type="image/png" sizes="32x32">
   <script src="admin.bundle.js" defer></script>
+  <script src="admin-programacao.js" defer></script>
 </head>
 <body class="min-h-screen bg-stone-50 text-stone-950">
   <main class="min-h-screen">
@@ -78,7 +79,7 @@
           <div class="flex min-w-0 items-center gap-3">
             <img src="imgs/logo-2.png" alt="Paróquia Santa Teresinha" class="h-11 w-11 shrink-0 object-contain">
             <div class="min-w-0">
-              <h1 class="truncate text-base font-bold text-red-950 sm:text-xl">Avisos Paroquiais</h1>
+              <h1 id="admin-section-title" class="truncate text-base font-bold text-red-950 sm:text-xl">Avisos Paroquiais</h1>
               <p id="admin-count" class="text-xs font-semibold text-stone-500">0 avisos</p>
             </div>
           </div>
@@ -95,7 +96,14 @@
         </div>
       </header>
 
-      <div class="mx-auto grid max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_420px]">
+      <nav class="border-b border-stone-200 bg-white px-4" aria-label="Seções do painel">
+        <div class="mx-auto flex max-w-6xl gap-1">
+          <button id="tab-avisos" type="button" class="border-b-2 border-red-950 px-4 py-3 text-sm font-bold text-red-950">Avisos</button>
+          <button id="tab-programacao" type="button" class="border-b-2 border-transparent px-4 py-3 text-sm font-bold text-stone-500 hover:text-red-950">Programação</button>
+        </div>
+      </nav>
+
+      <section id="avisos-panel" class="mx-auto grid max-w-6xl gap-5 px-4 py-5 lg:grid-cols-[minmax(0,1fr)_420px]">
         <section class="order-2 lg:order-1">
           <div id="admin-message" class="mb-4 hidden rounded-md px-4 py-3 text-sm font-semibold"></div>
 
@@ -179,7 +187,64 @@
             </button>
           </form>
         </aside>
-      </div>
+      </section>
+
+      <section id="programacao-panel" class="mx-auto hidden max-w-6xl px-4 py-5">
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-bold text-red-950">Celebrações e atividades</h2>
+            <p id="programacao-count" class="mt-1 text-xs font-semibold text-stone-500">0 atividades</p>
+          </div>
+          <div class="flex gap-2">
+            <button id="manage-communities-button" type="button" class="rounded-md border border-red-950 px-3 py-2 text-xs font-bold text-red-950 hover:bg-red-50">Comunidades</button>
+            <button id="new-programacao-button" type="button" class="rounded-md bg-red-950 px-3 py-2 text-xs font-bold text-white hover:bg-red-800">Nova atividade</button>
+          </div>
+        </div>
+        <div id="programacao-message" class="mb-4 hidden rounded-md px-4 py-3 text-sm font-semibold"></div>
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_420px]">
+          <div id="programacao-list" class="order-2 grid content-start gap-4 lg:order-1"></div>
+          <aside class="order-1 lg:order-2">
+            <form id="programacao-form" class="rounded-lg border border-red-950/10 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+              <div class="mb-4 flex items-start justify-between gap-3">
+                <div><h3 id="programacao-form-title" class="text-lg font-bold text-red-950">Nova atividade</h3><p class="mt-1 text-sm text-stone-600">Defina onde e quando ela acontece.</p></div>
+                <button id="cancel-programacao-button" type="button" class="hidden rounded-md border border-stone-300 px-3 py-2 text-xs font-bold text-stone-700">Cancelar</button>
+              </div>
+              <input id="programacao-id" type="hidden">
+              <label for="programacao-comunidade" class="mb-2 block text-sm font-bold text-stone-800">Comunidade</label>
+              <select id="programacao-comunidade" class="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base" required></select>
+              <label for="programacao-atividade" class="mb-2 mt-4 block text-sm font-bold text-stone-800">Atividade</label>
+              <input id="programacao-atividade" list="atividades-sugeridas" maxlength="100" class="w-full rounded-md border border-stone-300 px-4 py-3 text-base" placeholder="Ex.: Missa ou Adoração" required>
+              <datalist id="atividades-sugeridas"><option value="Missa"><option value="Adoração e Bênção do Santíssimo"><option value="Confissão"><option value="Terço"><option value="Celebração da Palavra"></datalist>
+              <label for="programacao-recorrencia" class="mb-2 mt-4 block text-sm font-bold text-stone-800">Recorrência</label>
+              <select id="programacao-recorrencia" class="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base">
+                <option value="semanal">Toda semana</option><option value="mensal">Uma vez por mês</option><option value="data_especifica">Data específica</option><option value="personalizada">Texto personalizado</option>
+              </select>
+              <div id="weekday-field" class="mt-4"><label for="programacao-dia" class="mb-2 block text-sm font-bold text-stone-800">Dia da semana</label><select id="programacao-dia" class="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base"><option value="0">Domingo</option><option value="1">Segunda-feira</option><option value="2">Terça-feira</option><option value="3">Quarta-feira</option><option value="4">Quinta-feira</option><option value="5">Sexta-feira</option><option value="6">Sábado</option></select></div>
+              <div id="month-week-field" class="mt-4 hidden"><label for="programacao-semana" class="mb-2 block text-sm font-bold text-stone-800">Semana do mês</label><select id="programacao-semana" class="w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base"><option value="1">1ª</option><option value="2">2ª</option><option value="3">3ª</option><option value="4">4ª</option><option value="5">5ª</option></select></div>
+              <div id="specific-date-field" class="mt-4 hidden"><label for="programacao-data" class="mb-2 block text-sm font-bold text-stone-800">Data</label><input id="programacao-data" type="date" class="w-full rounded-md border border-stone-300 px-4 py-3 text-base"></div>
+              <div id="custom-recurrence-field" class="mt-4 hidden"><label for="programacao-recorrencia-texto" class="mb-2 block text-sm font-bold text-stone-800">Quando acontece</label><input id="programacao-recorrencia-texto" maxlength="120" class="w-full rounded-md border border-stone-300 px-4 py-3 text-base" placeholder="Ex.: Última quinta-feira do mês"></div>
+              <label for="programacao-horario" class="mb-2 mt-4 block text-sm font-bold text-stone-800">Horário</label><input id="programacao-horario" type="time" class="w-full rounded-md border border-stone-300 px-4 py-3 text-base" required>
+              <label for="programacao-observacao" class="mb-2 mt-4 block text-sm font-bold text-stone-800">Observação <span class="font-normal text-stone-500">(opcional)</span></label><textarea id="programacao-observacao" maxlength="300" rows="3" class="w-full resize-y rounded-md border border-stone-300 px-4 py-3 text-base"></textarea>
+              <div class="mt-5 border-t border-stone-200 pt-5"><h4 class="mb-3 text-sm font-bold text-red-950">Prévia</h4><article class="rounded-lg border-l-4 border-red-900 bg-red-50/50 p-4"><p id="programacao-preview-atividade" class="font-bold text-red-900">Atividade</p><p id="programacao-preview-recorrencia" class="mt-1 text-sm font-semibold text-stone-700">Toda semana</p><p id="programacao-preview-horario" class="mt-2 text-lg font-bold text-amber-900">--h--</p><p id="programacao-preview-observacao" class="mt-1 hidden text-xs text-stone-500"></p></article></div>
+              <button id="save-programacao-button" type="submit" class="mt-5 w-full rounded-md bg-red-950 px-4 py-3 text-sm font-bold text-white hover:bg-red-800">Salvar atividade</button>
+            </form>
+          </aside>
+        </div>
+      </section>
+
+      <dialog id="communities-dialog" class="w-[calc(100%-2rem)] max-w-2xl rounded-lg p-0 shadow-xl backdrop:bg-black/40">
+        <div class="max-h-[85vh] overflow-y-auto p-5">
+          <div class="flex items-center justify-between gap-3"><h2 class="text-lg font-bold text-red-950">Comunidades</h2><button id="close-communities-button" type="button" class="rounded-md border border-stone-300 px-3 py-2 text-sm font-bold" aria-label="Fechar">Fechar</button></div>
+          <div id="communities-list" class="mt-5 grid gap-3"></div>
+          <form id="community-form" class="mt-5 border-t border-stone-200 pt-5">
+            <h3 id="community-form-title" class="text-sm font-bold text-red-950">Nova comunidade</h3><input id="community-id" type="hidden">
+            <div class="mt-3 grid gap-4 sm:grid-cols-[1fr_100px]"><div><label for="community-name" class="mb-2 block text-sm font-bold">Nome</label><input id="community-name" maxlength="120" class="w-full rounded-md border border-stone-300 px-4 py-3" required></div><div><label for="community-order" class="mb-2 block text-sm font-bold">Ordem</label><input id="community-order" type="number" min="0" value="0" class="w-full rounded-md border border-stone-300 px-4 py-3" required></div></div>
+            <label for="community-address" class="mb-2 mt-4 block text-sm font-bold">Endereço</label><textarea id="community-address" maxlength="300" rows="2" class="w-full rounded-md border border-stone-300 px-4 py-3" required></textarea>
+            <label class="mt-4 flex items-center gap-2 text-sm font-semibold"><input id="community-active" type="checkbox" class="h-4 w-4 accent-red-950" checked> Exibir no site</label>
+            <div class="mt-4 flex gap-2"><button id="save-community-button" type="submit" class="rounded-md bg-red-950 px-4 py-2 text-sm font-bold text-white">Salvar comunidade</button><button id="cancel-community-button" type="button" class="hidden rounded-md border border-stone-300 px-4 py-2 text-sm font-bold">Cancelar</button></div>
+          </form>
+        </div>
+      </dialog>
     </section>
   </main>
 </body>
