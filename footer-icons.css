@@ -1,0 +1,26 @@
+.footer-links {
+  gap: 8px;
+}
+
+.footer-links a,
+.footer-social {
+  display: flex;
+  width: fit-content;
+  min-height: 36px;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-links img,
+.footer-social img {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  object-fit: contain;
+}
+
+.footer-links span,
+.footer-social span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
