@@ -17,11 +17,13 @@ Este repositório contém o site da paróquia, com navegação responsiva, carre
 Principais características:
 
 - Estrutura simples e leve (sem framework SPA)
-- Layout responsivo com utilitários Tailwind CSS (via CDN)
+- Layout responsivo com Tailwind CSS compilado no build
 - Fontes Google Fonts (`Julius Sans One` e `Open Sans`)
 - Componentização de `header` e `footer` via `fetch`
 - Destaque automático da página ativa no menu
 - Efeitos visuais (fade, hover, animações de entrada)
+- Sistema visual mobile-first compartilhado entre as páginas públicas
+- Página inicial alimentada pelas APIs de programação e avisos
 - Modal de doação via PIX (na home e na página de doação)
 - URLs limpas na Vercel, como `/avisos`, `/admin` e `/celebracoes`
 - Painel administrativo com login e sessão persistente
@@ -34,6 +36,7 @@ Principais características:
 ```text
 .
 ├── index.html
+├── home.js
 ├── admin.html
 ├── admin.js
 ├── admin-programacao.js
@@ -50,6 +53,8 @@ Principais características:
 ├── contatos.html
 ├── scripts.js
 ├── styles.css
+├── styles.custom.css
+├── styles.source.css
 ├── tailwind.config.js
 ├── vercel.json
 ├── package.json
@@ -94,13 +99,13 @@ Principais características:
 - **HTML5**
 - **CSS3** (`styles.css`)
 - **JavaScript (ES6+)** (`scripts.js`)
-- **Tailwind CSS** via CDN
+- **Tailwind CSS** compilado localmente
 - **Google Fonts**
 - **Vercel Functions** em `api/`
 - **Turso DB** via `@libsql/client`
 - **Vercel Blob** para imagens dos avisos
 
-> Observação: embora exista um `tailwind.config.js`, o projeto utiliza Tailwind por CDN nos arquivos HTML.
+O arquivo `styles.source.css` reúne as diretivas do Tailwind e o sistema visual de `styles.custom.css`. O processo de build gera o `styles.css` minificado consumido por todas as páginas.
 
 ---
 
@@ -142,6 +147,13 @@ Responsável por comportamentos globais:
 - Abrir/fechar menu mobile
 - Alternar imagens da home em intervalo automático
 - Aplicar animações com `IntersectionObserver`
+- Controlar o estado acessível do menu mobile e a página ativa
+
+### `home.js`
+
+- Carrega as próximas celebrações em ordem cronológica
+- Exibe uma síntese dos avisos mais recentes
+- Mantém a página inicial sincronizada com o conteúdo administrativo
 
 ### `avisos.js`
 
@@ -151,6 +163,7 @@ Responsável pela página pública de avisos:
 - Renderizar os cards dinamicamente
 - Exibir data da última atualização
 - Mostrar estado vazio ou mensagem de erro quando necessário
+- Expandir textos longos e abrir imagens em tamanho ampliado
 
 ### `admin.js`
 
@@ -174,13 +187,15 @@ Responsável pelo painel administrativo:
 
 ### `styles.css`
 
-Contém estilos e animações complementares:
+É o artefato CSS compilado usado pelo navegador. A origem do sistema visual fica em `styles.custom.css` e inclui:
 
 - Scroll suave
 - Transições do menu mobile
 - Animações de fade e modal PIX
 - Efeitos de hover em links, cards, botões e imagens
 - Ajustes de tipografia para títulos e conteúdos
+- Cabeçalho, navegação mobile, rodapé e componentes da página inicial
+- Estados de foco e suporte a redução de movimento
 
 ---
 

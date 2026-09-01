@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paróquia Santa Teresinha - Avisos</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Julius+Sans+One&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -16,18 +15,23 @@
 
   <div id="header"></div>
 
-  <main class="mt-28 space-y-6 flex-grow flex flex-col items-center px-4">
+  <main class="mx-auto mt-28 w-full max-w-4xl space-y-6 flex-grow flex flex-col items-center px-4">
 
     <h1 class="page-title mx-4 text-center text-3xl lg:text-4xl font-bold text-red-900 tracking-wide fade-in">Avisos Paroquiais</h1>
-    <div id="ultima-atualizacao" class="bg-red-900 text-white font-bold text-sm px-4 py-2 rounded-full shadow-lg fade-in">
+    <div id="ultima-atualizacao" class="border border-red-900/20 bg-white text-red-900 font-bold text-sm px-4 py-2 rounded-md fade-in">
       Carregando avisos...
     </div>
 
     <h1 id="sem-avisos" class="text-lg hidden text-center text-red-950">Não há avisos no momento.</h1>
 
-    <div id="avisos" class="flex flex-col gap-6 mx-6 lg:max-w-2xl w-full fade-in">
+    <div id="avisos" class="grid gap-5 w-full fade-in sm:grid-cols-2">
     </div>
   </main>
+
+  <dialog id="aviso-image-dialog" class="m-auto max-h-[92vh] w-[calc(100%-2rem)] max-w-5xl rounded-lg bg-black p-2 shadow-2xl backdrop:bg-black/70">
+    <button id="close-aviso-image" type="button" class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-md bg-white text-xl font-bold text-red-950" aria-label="Fechar imagem">×</button>
+    <img id="expanded-aviso-image" alt="" class="max-h-[88vh] w-full object-contain">
+  </dialog>
 
   <div id="footer"></div>
 

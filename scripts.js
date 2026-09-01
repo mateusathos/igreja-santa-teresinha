@@ -1,95 +1,14 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // === Carregar header ===
-  const headerContainer = document.getElementById("header");
-  if (headerContainer) {
-    fetch("components/header.html")
-      .then(response => response.text())
-      .then(data => {
-        headerContainer.innerHTML = data;
-
-        // === Destacar página ativa ===
-        const path = window.location.pathname.replace(/\/$/, '');
-        const currentPage = (path.split('/').pop() || '').replace(/\.html$/, '');
-        const menuLinks = document.querySelectorAll('header a[href]');
-
-        menuLinks.forEach(link => {
-          const href = link.getAttribute('href').replace(/^\//, '').replace(/\/$/, '').replace(/\.html$/, '');
-          if (href === currentPage || (currentPage === '' && href === '')) {
-            link.classList.add('active');
-          }
-        });
-
-        // === Menu Mobile (só roda depois que o header é carregado) ===
-        const btn = document.getElementById("menu-btn");
-        const menu = document.getElementById("mobile-menu");
-
-        if (btn && menu) {
-          btn.addEventListener("click", () => {
-            menu.classList.toggle("menu-open");
-            btn.classList.toggle("open");
-          });
-        }
-      })
-      .catch(error => console.error("Erro ao carregar o header:", error));
-  }
-
-  // === Carregar footer ===
-  const footerContainer = document.getElementById("footer");
-  if (footerContainer) {
-    fetch("components/footer.html")
-      .then(response => response.text())
-      .then(data => {
-        footerContainer.innerHTML = data;
-      })
-      .catch(error => console.error("Erro ao carregar o footer:", error));
-  }
-
-  // === Troca de Imagens da Home ===
-  const imagens_homepage = [
-    "imgs/santa-teresinha-2.jpg",
-    "imgs/igreja.jpeg"
-  ];
-
-  let index = 1;
-  const img_homepage = document.getElementById("home-page");
-
-  function trocarImagem() {
-    if (!img_homepage) return;
-
-    img_homepage.classList.add("fade-hidden");
-
-    setTimeout(() => {
-      index = (index + 1) % imagens_homepage.length;
-      img_homepage.src = imagens_homepage[index];
-
-      img_homepage.classList.remove("fade-hidden");
-    }, 600);
-  }
-
-  setInterval(trocarImagem, 6000);
-
-  // === Animações de fade-in ao scroll ===
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('fade-in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-
-  // Observar elementos com classe fade-in
-  document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-  });
-
-  // Observar cards e imagens
-  document.querySelectorAll('#cards > div, .image-card, #avisos > div').forEach(el => {
-    observer.observe(el);
-  });
+document.addEventListener("DOMContentLoaded", async () => {
+  const loadFragment = async (id, url) => { const container = document.getElementById(id); if (!container) return; const response = await fetch(url); if (!response.ok) throw new Error(`Erro ao carregar ${url}`); container.innerHTML = await response.text(); };
+  try {
+    await loadFragment("header", "/components/header.html");
+    const current = window.location.pathname.replace(/\/$/, "") || "/";
+    document.querySelectorAll(".site-header a[href]").forEach((link) => { const target = new URL(link.href).pathname.replace(/\/$/, "") || "/"; if (target === current) { link.classList.add("active"); link.setAttribute("aria-current", "page"); } });
+    const button = document.getElementById("menu-btn"); const menu = document.getElementById("mobile-menu");
+    button?.addEventListener("click", () => { const open = menu.classList.toggle("menu-open"); button.classList.toggle("open", open); button.setAttribute("aria-expanded", String(open)); button.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu"); });
+  } catch (error) { console.error(error); }
+  try { await loadFragment("footer", "/components/footer.html"); } catch (error) { console.error(error); }
+  if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add("fade-in"); observer.unobserve(entry.target); } }), { threshold:.08, rootMargin:"0px 0px -30px" });
+  document.querySelectorAll(".fade-in").forEach((item) => observer.observe(item));
 });
