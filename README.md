@@ -167,6 +167,8 @@ Responsável pela página pública de avisos:
 
 ### `admin.js`
 
+As ações principais combinam texto com ícones Lucide, incluídos no bundle local de `admin-ui.js`. Editar fica visível nos registros; duplicar, alterar visibilidade e excluir ficam em Mais opções, com fechamento por Escape ou clique externo. No celular, a barra de salvar permanece acessível na parte inferior do editor, respeitando a área segura do dispositivo.
+
 O painel apresenta primeiro as listas de conteúdo. Criação e edição abrem em um diálogo com foco controlado, ocupando a tela no celular. A navegação de volta e o fechamento da página avisam quando há alterações não salvas; erros de gravação preservam o formulário.
 
 Os avisos possuem busca por título, filtro de visibilidade e ações para publicar, ocultar e duplicar. Ao duplicar um aviso com imagem, o arquivo é copiado para um novo upload, evitando compartilhar a mesma imagem removível entre registros.

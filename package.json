@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "build": "npm run build:admin && npm run build:css",
-    "build:admin": "esbuild admin.js --bundle --minify --platform=browser --format=iife --outfile=admin.bundle.js",
+    "build:admin": "esbuild admin.js --bundle --minify --platform=browser --format=iife --outfile=admin.bundle.js && esbuild admin-ui.js --bundle --minify --platform=browser --format=iife --outfile=admin-ui.bundle.js",
     "build:css": "tailwindcss -i ./styles.source.css -o ./styles.css --minify",
     "dev": "npx vercel dev",
     "start": "npx vercel dev"
   },
   "dependencies": {
     "@libsql/client": "^0.15.15",
-    "@vercel/blob": "^2.8.0"
+    "@vercel/blob": "^2.8.0",
+    "lucide": "^1.41.0"
   },
   "devDependencies": {
     "esbuild": "^0.28.2",
