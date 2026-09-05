@@ -49,6 +49,16 @@ const elements = {
   saveAvisoButton: document.getElementById("save-aviso-button")
 };
 
+const noticeEditor = window.adminUI.editor('aviso-form', 'Aviso paroquial');
+const noticeTools = document.createElement('div');
+noticeTools.className = 'admin-tools';
+noticeTools.innerHTML = '<label>Buscar aviso<input type="search" id="notice-search" placeholder="Título do aviso"></label><label>Exibição<select id="notice-status"><option value="">Todos</option><option value="published">Publicados</option><option value="hidden">Ocultos</option></select></label><a class="admin-public-link" href="/avisos" target="_blank" rel="noopener">Ver no site</a>';
+elements.avisosList.before(noticeTools);
+noticeTools.addEventListener('input', renderAvisos);
+elements.newAvisoButton.textContent = 'Novo aviso';
+elements.removeImageButton.addEventListener('click', () => noticeEditor.markDirty());
+elements.cancelEditButton.textContent = 'Voltar à lista';
+
 function showView(view) {
   elements.loadingView.classList.toggle("hidden", view !== "loading");
   elements.loginView.classList.toggle("hidden", view !== "login");
@@ -133,6 +143,7 @@ function buildAvisoCard(aviso) {
   const date = document.createElement("p");
   date.className = "mt-1 text-xs font-semibold text-stone-500";
   date.textContent = aviso.atualizado_em ? `Atualizado em ${formatDate(aviso.atualizado_em)}` : "";
+  date.textContent += aviso.ativo ? ' · Publicado' : ' · Oculto';
   content.append(title, date);
 
   const actions = document.createElement("div");
@@ -148,6 +159,41 @@ function buildAvisoCard(aviso) {
   deleteButton.textContent = "Excluir";
   deleteButton.addEventListener("click", () => deleteAviso(aviso.id));
   actions.append(editButton, deleteButton);
+  const visibility = document.createElement('button');
+  visibility.type = 'button';
+  visibility.className = editButton.className;
+  visibility.textContent = aviso.ativo ? 'Ocultar' : 'Publicar';
+  visibility.addEventListener('click', async () => {
+    visibility.disabled = true;
+    try {
+      await requestJson('/api/admin/avisos', {method: 'PUT', body: JSON.stringify({...aviso, ativo: !aviso.ativo})});
+      await loadAvisos();
+      setAdminMessage(aviso.ativo ? 'Aviso ocultado.' : 'Aviso publicado.');
+    } catch (error) { setAdminMessage(error.message, 'error'); }
+    finally { visibility.disabled = false; }
+  });
+  actions.append(visibility);
+  const duplicate = document.createElement('button');
+  duplicate.type = 'button'; duplicate.className = editButton.className; duplicate.textContent = 'Duplicar';
+  duplicate.addEventListener('click', async () => {
+    duplicate.disabled = true;
+    try {
+      let image = null;
+      if (aviso.imagem_url) {
+        const response = await fetch(aviso.imagem_url);
+        if (!response.ok) throw new Error('Não foi possível copiar a imagem. Tente novamente.');
+        const blob = await response.blob();
+        image = await prepareImage(new File([blob], 'copia.webp', {type: blob.type}));
+      }
+      resetForm();
+      elements.avisoTitulo.value = aviso.titulo;
+      elements.avisoDescricao.value = aviso.descricao;
+      if (image) { state.pendingImage = image; state.previewObjectUrl = URL.createObjectURL(image); }
+      updatePreview(); noticeEditor.open();
+    } catch (error) { setAdminMessage(error.message, 'error'); }
+    finally { duplicate.disabled = false; }
+  });
+  actions.append(duplicate);
   header.append(content, actions);
 
   const description = document.createElement("p");
@@ -164,7 +210,11 @@ function renderAvisos() {
   const count = state.avisos.length;
   elements.adminCount.textContent = `${count} ${count === 1 ? "aviso" : "avisos"}`;
   elements.emptyState.classList.toggle("hidden", count > 0);
-  state.avisos.forEach((aviso) => elements.avisosList.appendChild(buildAvisoCard(aviso)));
+  const search = document.getElementById('notice-search').value.trim().toLocaleLowerCase('pt-BR');
+  const status = document.getElementById('notice-status').value;
+  const visible = state.avisos.filter(aviso => aviso.titulo.toLocaleLowerCase('pt-BR').includes(search) && (!status || aviso.ativo === (status === 'published')));
+  visible.forEach((aviso) => elements.avisosList.appendChild(buildAvisoCard(aviso)));
+  if (count && !visible.length) elements.avisosList.textContent = 'Nenhum aviso encontrado para estes filtros.';
 }
 
 function revokePreviewObjectUrl() {
@@ -220,6 +270,7 @@ function startEditing(aviso) {
   elements.cancelEditButton.classList.remove("hidden");
   elements.saveAvisoButton.textContent = "Atualizar aviso";
   updatePreview();
+  noticeEditor.open();
   elements.avisoTitulo.focus();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -309,11 +360,12 @@ elements.togglePasswordButton.addEventListener("click", () => {
 
 elements.newAvisoButton.addEventListener("click", () => {
   resetForm();
+  noticeEditor.open();
   elements.avisoTitulo.focus();
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
-elements.cancelEditButton.addEventListener("click", resetForm);
+elements.cancelEditButton.addEventListener("click", () => noticeEditor.close());
 elements.avisoTitulo.addEventListener("input", updatePreview);
 elements.avisoDescricao.addEventListener("input", updatePreview);
 
@@ -355,6 +407,8 @@ elements.avisoForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   setAdminMessage("");
   const editing = Boolean(state.editingId);
+  noticeEditor.busy(true);
+  noticeEditor.message('');
   elements.saveAvisoButton.disabled = true;
   elements.avisoImagem.disabled = true;
   elements.saveAvisoButton.textContent = state.pendingImage ? "Enviando imagem..." : editing ? "Atualizando..." : "Salvando...";
@@ -384,6 +438,7 @@ elements.avisoForm.addEventListener("submit", async (event) => {
       imagem_url: imagemUrl,
       imagem_pathname: imagemPathname
     };
+    if (state.editingId) payload.ativo = state.avisos.find(item => item.id === state.editingId)?.ativo ?? true;
     if (state.editingId) payload.id = state.editingId;
 
     await requestJson("/api/admin/avisos", {
@@ -391,12 +446,14 @@ elements.avisoForm.addEventListener("submit", async (event) => {
       body: JSON.stringify(payload)
     });
     resetForm();
+    noticeEditor.busy(false);
+    noticeEditor.close(true);
     await loadAvisos();
-    setAdminMessage("Aviso salvo.");
+    setAdminMessage("Alterações salvas. A página pública está atualizada.");
   } catch (error) {
-    if (error.status === 401) showView("login");
-    else setAdminMessage(error.message, "error");
+    noticeEditor.message(error.status === 401 ? 'Sessão expirada. Abra /admin em outra aba para entrar novamente e depois tente salvar aqui.' : error.message);
   } finally {
+    noticeEditor.busy(false);
     elements.saveAvisoButton.disabled = false;
     elements.avisoImagem.disabled = false;
     elements.saveAvisoButton.textContent = state.editingId ? "Atualizar aviso" : "Salvar aviso";
@@ -404,7 +461,8 @@ elements.avisoForm.addEventListener("submit", async (event) => {
 });
 
 async function deleteAviso(id) {
-  if (!window.confirm("Excluir este aviso?")) return;
+  const aviso = state.avisos.find(item => item.id === id);
+  if (!window.confirm(`Excluir "${aviso?.titulo}"? Para suspender temporariamente, use Ocultar.`)) return;
   try {
     await requestJson("/api/admin/avisos", {
       method: "DELETE",

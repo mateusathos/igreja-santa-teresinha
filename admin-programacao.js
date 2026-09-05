@@ -1,82 +1,153 @@
 (() => {
-  const days = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
-  const weeklyLabels = ["Todos os domingos", "Todas as segundas-feiras", "Todas as terças-feiras", "Todas as quartas-feiras", "Todas as quintas-feiras", "Todas as sextas-feiras", "Todos os sábados"];
-  const state = { comunidades: [], programacoes: [], editingId: null, loaded: false };
-  const byId = (id) => document.getElementById(id);
-  const el = {
-    tabAvisos: byId("tab-avisos"), tabProgramacao: byId("tab-programacao"), avisosPanel: byId("avisos-panel"),
-    panel: byId("programacao-panel"), sectionTitle: byId("admin-section-title"), adminCount: byId("admin-count"),
-    newAviso: byId("new-aviso-button"), list: byId("programacao-list"), count: byId("programacao-count"),
-    message: byId("programacao-message"), form: byId("programacao-form"), formTitle: byId("programacao-form-title"),
-    id: byId("programacao-id"), comunidade: byId("programacao-comunidade"), atividade: byId("programacao-atividade"),
-    recorrencia: byId("programacao-recorrencia"), dia: byId("programacao-dia"), semana: byId("programacao-semana"),
-    data: byId("programacao-data"), recorrenciaTexto: byId("programacao-recorrencia-texto"), horario: byId("programacao-horario"),
-    observacao: byId("programacao-observacao"), weekdayField: byId("weekday-field"), monthWeekField: byId("month-week-field"),
-    dateField: byId("specific-date-field"), customField: byId("custom-recurrence-field"), cancel: byId("cancel-programacao-button"),
-    save: byId("save-programacao-button"), newButton: byId("new-programacao-button"), previewAtividade: byId("programacao-preview-atividade"),
-    previewRecorrencia: byId("programacao-preview-recorrencia"), previewHorario: byId("programacao-preview-horario"),
-    previewObservacao: byId("programacao-preview-observacao"), dialog: byId("communities-dialog"),
-    communitiesList: byId("communities-list"), communityForm: byId("community-form"), communityId: byId("community-id"),
-    communityName: byId("community-name"), communityAddress: byId("community-address"), communityOrder: byId("community-order"),
-    communityActive: byId("community-active"), communityTitle: byId("community-form-title"), communityCancel: byId("cancel-community-button")
-  };
-
-  function escapeHtml(value) { const node = document.createElement("div"); node.textContent = value == null ? "" : String(value); return node.innerHTML; }
-  async function request(options = {}) {
-    const response = await fetch("/api/admin/programacoes", { headers: { "Content-Type": "application/json" }, ...options });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) { const error = new Error(data.error || "Erro ao processar solicitação."); error.status = response.status; throw error; }
+  const $ = id => document.getElementById(id);
+  const state = { comunidades: [], programacoes: [], editing: null };
+  const form = $('programacao-form');
+  const editor = window.adminUI.editor('programacao-form', 'Celebração ou atividade');
+  const communityEditor = window.adminUI.editor('community-form', 'Comunidade');
+  const fields = { comunidade_id: 'comunidade', atividade: 'atividade', recorrencia: 'recorrencia', dia_semana: 'dia', semana_mes: 'semana', data_especifica: 'data', recorrencia_texto: 'recorrencia-texto', horario: 'horario', observacao: 'observacao' };
+  const days = ['domingo', 'segunda-feira', 'terça-feira', 'quarta-feira', 'quinta-feira', 'sexta-feira', 'sábado'];
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const tools = document.createElement('div');
+  tools.className = 'admin-tools';
+  tools.innerHTML = '<label>Comunidade<select id="schedule-community"><option value="">Todas</option></select></label><label>Buscar atividade<input type="search" id="schedule-search" placeholder="Missa, adoração..."></label><label>Exibição<select id="schedule-status"><option value="">Todas</option><option value="published">Publicadas</option><option value="hidden">Ocultas</option></select></label><a class="admin-public-link" href="/celebracoes" target="_blank" rel="noopener">Ver no site</a>';
+  $('programacao-list').before(tools);
+  tools.addEventListener('input', render);
+  document.querySelector('label[for="programacao-recorrencia"]').textContent = 'Quando acontece?';
+  $('programacao-recorrencia').options[1].textContent = 'Todo mês';
+  $('programacao-recorrencia').options[2].textContent = 'Em uma data';
+  const visibilityLabel = document.createElement('label');
+  visibilityLabel.className = 'admin-tools';
+  visibilityLabel.innerHTML = '<span><input id="schedule-active" type="checkbox" checked> Publicar no site</span>';
+  $('save-programacao-button').before(visibilityLabel);
+  const previewCommunity = document.createElement('p');
+  previewCommunity.className = 'admin-state';
+  $('programacao-preview-atividade').before(previewCommunity);
+  async function request(method = 'GET', body) {
+    const response = await fetch('/api/admin/programacoes', {method, headers: {'Content-Type': 'application/json'}, ...(body ? {body: JSON.stringify(body)} : {})});
+    const data = await response.json();
+    if (!response.ok) throw new Error(response.status === 401 ? 'Sessão expirada. Entre novamente em outra aba e tente salvar aqui.' : data.error || 'Não foi possível concluir a ação.');
     return data;
   }
-  function setMessage(text, type = "success") {
-    el.message.textContent = text; el.message.classList.toggle("hidden", !text);
-    el.message.className = `mb-4 rounded-md px-4 py-3 text-sm font-semibold ${type === "error" ? "bg-red-50 text-red-900" : "bg-emerald-50 text-emerald-900"} ${text ? "" : "hidden"}`;
+  function message(text) { $('programacao-message').textContent = text; $('programacao-message').classList.remove('hidden'); $('programacao-message').setAttribute('role', 'status'); }
+  function recurrence(item) {
+    if (item.recorrencia === 'semanal') return `${[0,6].includes(Number(item.dia_semana)) ? 'Todo' : 'Toda'} ${days[item.dia_semana]}`;
+    if (item.recorrencia === 'mensal') return `${item.semana_mes}${[0,6].includes(Number(item.dia_semana)) ? 'º' : 'ª'} ${days[item.dia_semana]} de cada mês`;
+    if (item.recorrencia === 'data_especifica') return item.data_especifica ? item.data_especifica.split('-').reverse().join('/') : 'Escolha a data';
+    return item.recorrencia_texto || 'Defina quando acontece';
   }
-  function recurrenceText(item) {
-    if (item.recorrencia === "semanal") return weeklyLabels[item.dia_semana];
-    if (item.recorrencia === "mensal") return `${[0, 6].includes(item.dia_semana) ? `${item.semana_mes}º` : `${item.semana_mes}ª`} ${days[item.dia_semana].toLowerCase()} do mês`;
-    if (item.recorrencia === "data_especifica") return item.data_especifica ? new Date(`${item.data_especifica}T12:00:00`).toLocaleDateString("pt-BR") : "Data específica";
-    return item.recorrencia_texto || "Recorrência personalizada";
+  function values() { return Object.fromEntries(Object.entries(fields).map(([key, id]) => [key, $('programacao-' + id).value])); }
+  function preview() {
+    const item = values();
+    const weekly = ['semanal','mensal'].includes(item.recorrencia);
+    $('weekday-field').classList.toggle('hidden', !weekly);
+    $('month-week-field').classList.toggle('hidden', item.recorrencia !== 'mensal');
+    $('specific-date-field').classList.toggle('hidden', item.recorrencia !== 'data_especifica');
+    $('custom-recurrence-field').classList.toggle('hidden', item.recorrencia !== 'personalizada');
+    $('programacao-data').required = item.recorrencia === 'data_especifica';
+    $('programacao-recorrencia-texto').required = item.recorrencia === 'personalizada';
+    previewCommunity.textContent = state.comunidades.find(c => c.id === Number(item.comunidade_id))?.nome || '';
+    $('programacao-preview-atividade').textContent = item.atividade || 'Atividade';
+    $('programacao-preview-recorrencia').textContent = recurrence(item);
+    $('programacao-preview-horario').textContent = item.horario || '--:--';
+    $('programacao-preview-observacao').textContent = item.observacao;
+    $('programacao-preview-observacao').classList.toggle('hidden', !item.observacao);
   }
-  function updateConditionalFields() {
-    const type = el.recorrencia.value;
-    el.weekdayField.classList.toggle("hidden", !["semanal", "mensal"].includes(type));
-    el.monthWeekField.classList.toggle("hidden", type !== "mensal");
-    el.dateField.classList.toggle("hidden", type !== "data_especifica");
-    el.customField.classList.toggle("hidden", type !== "personalizada");
-    updatePreview();
-  }
-  function currentFormItem() {
-    return { recorrencia: el.recorrencia.value, dia_semana: Number(el.dia.value), semana_mes: Number(el.semana.value), data_especifica: el.data.value, recorrencia_texto: el.recorrenciaTexto.value };
-  }
-  function updatePreview() {
-    el.previewAtividade.textContent = el.atividade.value.trim() || "Atividade";
-    el.previewRecorrencia.textContent = recurrenceText(currentFormItem());
-    el.previewHorario.textContent = el.horario.value ? el.horario.value.replace(":", "h") : "--h--";
-    el.previewObservacao.textContent = el.observacao.value.trim(); el.previewObservacao.classList.toggle("hidden", !el.observacao.value.trim());
+  function open(item = null, communityId = null, duplicate = false) {
+    state.editing = duplicate ? null : item;
+    form.reset();
+    for (const [key, id] of Object.entries(fields)) if (item) $('programacao-' + id).value = item[key] ?? '';
+    if (communityId) $('programacao-comunidade').value = communityId;
+    $('schedule-active').checked = duplicate ? false : item?.ativo ?? true;
+    $('programacao-form-title').textContent = duplicate ? 'Duplicar atividade' : item ? 'Editar atividade' : 'Nova atividade';
+    $('cancel-programacao-button').classList.add('hidden');
+    preview(); editor.open();
   }
   function render() {
-    el.count.textContent = `${state.programacoes.length} ${state.programacoes.length === 1 ? "atividade" : "atividades"}`;
-    el.comunidade.innerHTML = state.comunidades.filter((item) => item.ativo).map((item) => `<option value="${item.id}">${escapeHtml(item.nome)}</option>`).join("");
-    const groups = state.comunidades.map((comunidade) => ({ comunidade, items: state.programacoes.filter((item) => item.comunidade_id === comunidade.id) })).filter((group) => group.items.length);
-    el.list.innerHTML = groups.length ? groups.map(({ comunidade, items }) => `<section class="overflow-hidden rounded-lg border border-red-950/10 bg-white shadow-sm"><header class="flex items-center justify-between gap-3 bg-red-950 px-4 py-3 text-white"><div><h3 class="font-bold">${escapeHtml(comunidade.nome)}</h3><p class="mt-1 text-xs text-red-100">${items.length} ${items.length === 1 ? "atividade" : "atividades"}</p></div>${comunidade.ativo ? "" : '<span class="rounded bg-white/15 px-2 py-1 text-xs font-bold">Oculta</span>'}</header><div class="divide-y divide-stone-200">${items.map((item) => `<article class="p-4"><div class="flex items-start justify-between gap-3"><div class="min-w-0"><h4 class="break-words font-bold text-red-900">${escapeHtml(item.atividade)}</h4><p class="mt-1 text-sm font-semibold text-stone-700">${escapeHtml(recurrenceText(item))} às ${escapeHtml(item.horario)}</p>${item.observacao ? `<p class="mt-1 break-words text-xs text-stone-500">${escapeHtml(item.observacao)}</p>` : ""}</div><div class="flex shrink-0 gap-2"><button type="button" data-edit="${item.id}" class="rounded-md border border-stone-300 px-3 py-2 text-xs font-bold text-stone-700">Editar</button><button type="button" data-delete="${item.id}" class="rounded-md border border-red-200 px-3 py-2 text-xs font-bold text-red-900">Excluir</button></div></div></article>`).join("")}</div></section>`).join("") : '<div class="rounded-lg border border-dashed border-red-950/30 bg-white p-6 text-center"><h3 class="font-bold text-red-950">Nenhuma atividade cadastrada</h3></div>';
-    renderCommunities();
+    const community = $('schedule-community').value;
+    const query = $('schedule-search').value.trim().toLocaleLowerCase('pt-BR');
+    const status = $('schedule-status').value;
+    const groups = state.comunidades.filter(c => !community || String(c.id) === community);
+    $('programacao-count').textContent = `${state.programacoes.length} atividades`;
+    $('programacao-list').innerHTML = groups.map(c => {
+      const items = state.programacoes.filter(item => item.comunidade_id === c.id && item.atividade.toLocaleLowerCase('pt-BR').includes(query) && (!status || Boolean(item.ativo && c.ativo) === (status === 'published')));
+      return `<section class="py-4 border-b border-stone-200"><div class="flex flex-wrap items-center justify-between gap-3"><h3 class="font-bold text-red-950">${escape(c.nome)}${c.ativo ? '' : ' (oculta)'}</h3><button type="button" data-create="${c.id}" class="text-sm font-bold text-red-900">Adicionar atividade</button></div>${items.map(item => `<article class="py-4"><h4 class="font-bold">${escape(item.atividade)}</h4><p>${escape(recurrence(item))} às ${escape(item.horario)}</p><span class="admin-state">${item.ativo && c.ativo ? 'Publicada' : 'Oculta'}${!c.ativo ? ' · Comunidade oculta' : ''}</span><div class="flex flex-wrap gap-3">${[['edit','Editar'],['duplicate','Duplicar'],['toggle',item.ativo ? 'Ocultar' : 'Publicar'],['delete','Excluir']].map(([action,label]) => `<button type="button" data-action="${action}" data-id="${item.id}" class="text-sm font-bold text-red-900">${label}</button>`).join('')}</div></article>`).join('') || '<p class="py-4 text-sm text-stone-500">Nenhuma atividade para estes filtros.</p>'}</section>`;
+    }).join('');
   }
+  async function load() {
+    const data = await request(); Object.assign(state, data);
+    const selected = $('schedule-community').value;
+    const options = state.comunidades.map(c => `<option value="${c.id}">${escape(c.nome)}${c.ativo ? '' : ' (oculta)'}</option>`).join('');
+    $('programacao-comunidade').innerHTML = options;
+    $('schedule-community').innerHTML = '<option value="">Todas</option>' + options;
+    $('schedule-community').value = selected;
+    render(); renderCommunities();
+  }
+  function tab(program) {
+    $('avisos-panel').classList.toggle('hidden', program);
+    $('programacao-panel').classList.toggle('hidden', !program);
+    $('new-aviso-button').classList.toggle('hidden', program);
+    $('admin-count').classList.toggle('hidden', program);
+    $('admin-section-title').textContent = program ? 'Programação' : 'Avisos paroquiais';
+    for (const [id, selected] of [['tab-avisos',!program],['tab-programacao',program]]) {
+      $(id).setAttribute('aria-pressed', String(selected));
+      $(id).className = `border-b-2 px-4 py-3 text-sm font-bold ${selected ? 'border-red-950 text-red-950' : 'border-transparent text-stone-500'}`;
+    }
+    if (program) load().catch(error => message(error.message));
+  }
+  $('tab-avisos').addEventListener('click', () => tab(false));
+  $('tab-programacao').addEventListener('click', () => tab(true));
+  $('new-programacao-button').addEventListener('click', () => open());
+  form.addEventListener('input', preview);
+  form.addEventListener('change', preview);
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); editor.busy(true); editor.message('Salvando...');
+    const button = $('save-programacao-button'); button.disabled = true;
+    try {
+      await request(state.editing ? 'PUT' : 'POST', {...values(), resource: 'programacao', id: state.editing?.id, ordem: state.editing?.ordem ?? 0, ativo: $('schedule-active').checked});
+      editor.busy(false); editor.close(true); message('Alterações salvas. A página pública está atualizada.'); await load();
+    } catch (error) { editor.message(error.message); }
+    finally { editor.busy(false); button.disabled = false; }
+  });
+  $('programacao-list').addEventListener('click', async event => {
+    const create = event.target.closest('[data-create]'); if (create) return open(null, create.dataset.create);
+    const button = event.target.closest('[data-action]'); if (!button) return;
+    const item = state.programacoes.find(i => i.id === Number(button.dataset.id));
+    const action = button.dataset.action;
+    if (action === 'edit' || action === 'duplicate') return open(item, null, action === 'duplicate');
+    const community = state.comunidades.find(c => c.id === item.comunidade_id);
+    if (action === 'delete' && !confirm(`Excluir "${item.atividade}" (${recurrence(item)}, ${item.horario}) de ${community.nome}? Para suspender temporariamente, use Ocultar.`)) return;
+    button.disabled = true;
+    try { await request(action === 'delete' ? 'DELETE' : 'PUT', {...item, resource: 'programacao', ativo: !item.ativo}); await load(); message(action === 'delete' ? 'Atividade excluída.' : 'Visibilidade atualizada.'); }
+    catch (error) { message(error.message); } finally { button.disabled = false; }
+  });
   function renderCommunities() {
-    el.communitiesList.innerHTML = state.comunidades.map((item) => `<article class="rounded-md border border-stone-200 p-3"><div class="flex items-start justify-between gap-3"><div class="min-w-0"><h3 class="break-words text-sm font-bold text-red-950">${escapeHtml(item.nome)}</h3><p class="mt-1 break-words text-xs text-stone-500">${escapeHtml(item.endereco)}</p></div><div class="flex shrink-0 gap-2"><button type="button" data-community-edit="${item.id}" class="rounded border border-stone-300 px-2 py-1 text-xs font-bold">Editar</button><button type="button" data-community-delete="${item.id}" class="rounded border border-red-200 px-2 py-1 text-xs font-bold text-red-900">Excluir</button></div></div></article>`).join("");
+    $('communities-list').innerHTML = state.comunidades.map(c => `<article class="py-3 border-b border-stone-200"><h3 class="font-bold">${escape(c.nome)}</h3><p class="text-sm">${escape(c.endereco)}</p><div class="flex gap-4"><button data-community-edit="${c.id}" type="button">Editar</button><button data-community-delete="${c.id}" type="button">Excluir</button></div></article>`).join('');
   }
-  async function load() { const data = await request(); state.comunidades = data.comunidades; state.programacoes = data.programacoes; state.loaded = true; render(); resetForm(); }
-  function resetForm() { state.editingId = null; el.form.reset(); el.id.value = ""; el.formTitle.textContent = "Nova atividade"; el.cancel.classList.add("hidden"); el.save.textContent = "Salvar atividade"; updateConditionalFields(); }
-  function editItem(id) { const item = state.programacoes.find((entry) => entry.id === id); if (!item) return; state.editingId = id; el.id.value = id; el.comunidade.value = item.comunidade_id; el.atividade.value = item.atividade; el.recorrencia.value = item.recorrencia; el.dia.value = item.dia_semana ?? 0; el.semana.value = item.semana_mes ?? 1; el.data.value = item.data_especifica || ""; el.recorrenciaTexto.value = item.recorrencia_texto || ""; el.horario.value = item.horario; el.observacao.value = item.observacao || ""; el.formTitle.textContent = "Editar atividade"; el.cancel.classList.remove("hidden"); el.save.textContent = "Atualizar atividade"; updateConditionalFields(); el.form.scrollIntoView({ behavior: "smooth", block: "start" }); }
-  function resetCommunityForm() { el.communityForm.reset(); el.communityId.value = ""; el.communityOrder.value = "0"; el.communityActive.checked = true; el.communityTitle.textContent = "Nova comunidade"; el.communityCancel.classList.add("hidden"); }
-
-  el.tabAvisos.addEventListener("click", () => { el.avisosPanel.classList.remove("hidden"); el.panel.classList.add("hidden"); el.newAviso.classList.remove("hidden"); el.sectionTitle.textContent = "Avisos Paroquiais"; el.adminCount.classList.remove("hidden"); el.tabAvisos.className = "border-b-2 border-red-950 px-4 py-3 text-sm font-bold text-red-950"; el.tabProgramacao.className = "border-b-2 border-transparent px-4 py-3 text-sm font-bold text-stone-500 hover:text-red-950"; });
-  el.tabProgramacao.addEventListener("click", async () => { el.avisosPanel.classList.add("hidden"); el.panel.classList.remove("hidden"); el.newAviso.classList.add("hidden"); el.sectionTitle.textContent = "Programação"; el.adminCount.classList.add("hidden"); el.tabProgramacao.className = "border-b-2 border-red-950 px-4 py-3 text-sm font-bold text-red-950"; el.tabAvisos.className = "border-b-2 border-transparent px-4 py-3 text-sm font-bold text-stone-500 hover:text-red-950"; if (!state.loaded) await load().catch((error) => setMessage(error.message, "error")); });
-  el.recorrencia.addEventListener("change", updateConditionalFields); [el.atividade, el.dia, el.semana, el.data, el.recorrenciaTexto, el.horario, el.observacao].forEach((input) => input.addEventListener("input", updatePreview));
-  el.newButton.addEventListener("click", () => { resetForm(); el.form.scrollIntoView({ behavior: "smooth" }); }); el.cancel.addEventListener("click", resetForm);
-  el.form.addEventListener("submit", async (event) => { event.preventDefault(); const body = { resource: "programacao", id: state.editingId, comunidade_id: Number(el.comunidade.value), atividade: el.atividade.value, recorrencia: el.recorrencia.value, dia_semana: Number(el.dia.value), semana_mes: Number(el.semana.value), data_especifica: el.data.value, recorrencia_texto: el.recorrenciaTexto.value, horario: el.horario.value, observacao: el.observacao.value }; el.save.disabled = true; try { await request({ method: state.editingId ? "PUT" : "POST", body: JSON.stringify(body) }); await load(); setMessage("Atividade salva."); } catch (error) { setMessage(error.message, "error"); } finally { el.save.disabled = false; } });
-  el.list.addEventListener("click", async (event) => { const edit = event.target.closest("[data-edit]"); if (edit) return editItem(Number(edit.dataset.edit)); const remove = event.target.closest("[data-delete]"); if (!remove || !confirm("Excluir esta atividade?")) return; try { await request({ method: "DELETE", body: JSON.stringify({ resource: "programacao", id: Number(remove.dataset.delete) }) }); await load(); setMessage("Atividade excluída."); } catch (error) { setMessage(error.message, "error"); } });
-  byId("manage-communities-button").addEventListener("click", () => { renderCommunities(); resetCommunityForm(); el.dialog.showModal(); }); byId("close-communities-button").addEventListener("click", () => el.dialog.close()); el.communityCancel.addEventListener("click", resetCommunityForm);
-  el.communitiesList.addEventListener("click", async (event) => { const edit = event.target.closest("[data-community-edit]"); if (edit) { const item = state.comunidades.find((entry) => entry.id === Number(edit.dataset.communityEdit)); el.communityId.value = item.id; el.communityName.value = item.nome; el.communityAddress.value = item.endereco; el.communityOrder.value = item.ordem; el.communityActive.checked = item.ativo; el.communityTitle.textContent = "Editar comunidade"; el.communityCancel.classList.remove("hidden"); return; } const remove = event.target.closest("[data-community-delete]"); if (!remove || !confirm("Excluir esta comunidade?")) return; try { await request({ method: "DELETE", body: JSON.stringify({ resource: "comunidade", id: Number(remove.dataset.communityDelete) }) }); await load(); } catch (error) { alert(error.message); } });
-  el.communityForm.addEventListener("submit", async (event) => { event.preventDefault(); const id = Number(el.communityId.value) || null; try { await request({ method: id ? "PUT" : "POST", body: JSON.stringify({ resource: "comunidade", id, nome: el.communityName.value, endereco: el.communityAddress.value, ordem: Number(el.communityOrder.value), ativo: el.communityActive.checked }) }); await load(); resetCommunityForm(); } catch (error) { alert(error.message); } });
+  function openCommunity(item) {
+    $('community-form').reset(); $('community-id').value = item?.id || '';
+    $('community-name').value = item?.nome || ''; $('community-address').value = item?.endereco || '';
+    $('community-order').value = item?.ordem ?? 0; $('community-active').checked = item?.ativo ?? true;
+    $('community-form-title').textContent = item ? 'Editar comunidade' : 'Nova comunidade';
+    communityEditor.open();
+  }
+  const newCommunity = document.createElement('button'); newCommunity.type = 'button'; newCommunity.className = 'admin-back'; newCommunity.textContent = 'Nova comunidade';
+  $('communities-list').before(newCommunity); newCommunity.addEventListener('click', () => openCommunity());
+  $('manage-communities-button').addEventListener('click', () => $('communities-dialog').showModal());
+  $('close-communities-button').addEventListener('click', () => $('communities-dialog').close());
+  $('cancel-community-button').addEventListener('click', () => communityEditor.close());
+  $('communities-list').addEventListener('click', async event => {
+    const edit = event.target.closest('[data-community-edit]'); if (edit) return openCommunity(state.comunidades.find(c => c.id === Number(edit.dataset.communityEdit)));
+    const button = event.target.closest('[data-community-delete]'); if (!button) return;
+    const id = Number(button.dataset.communityDelete), item = state.comunidades.find(c => c.id === id);
+    if (!confirm(`Excluir a comunidade "${item.nome}"?`)) return;
+    try { await request('DELETE', {resource: 'comunidade', id}); await load(); }
+    catch (error) { alert(error.message); }
+  });
+  $('community-form').addEventListener('submit', async event => {
+    event.preventDefault(); const id = Number($('community-id').value) || null;
+    communityEditor.busy(true); $('save-community-button').disabled = true; communityEditor.message('Salvando...');
+    try { await request(id ? 'PUT' : 'POST', {resource: 'comunidade', id, nome: $('community-name').value, endereco: $('community-address').value, ordem: Number($('community-order').value), ativo: $('community-active').checked}); communityEditor.busy(false); communityEditor.close(true); await load(); }
+    catch (error) { communityEditor.message(error.message); }
+    finally { communityEditor.busy(false); $('save-community-button').disabled = false; }
+  });
 })();

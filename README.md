@@ -167,6 +167,12 @@ Responsável pela página pública de avisos:
 
 ### `admin.js`
 
+O painel apresenta primeiro as listas de conteúdo. Criação e edição abrem em um diálogo com foco controlado, ocupando a tela no celular. A navegação de volta e o fechamento da página avisam quando há alterações não salvas; erros de gravação preservam o formulário.
+
+Os avisos possuem busca por título, filtro de visibilidade e ações para publicar, ocultar e duplicar. Ao duplicar um aviso com imagem, o arquivo é copiado para um novo upload, evitando compartilhar a mesma imagem removível entre registros.
+
+Na programação, os filtros incluem comunidade, nome da atividade e visibilidade. Cada comunidade permite adicionar atividades diretamente, e o editor mostra a comunidade na prévia. Atividades duplicadas começam ocultas e são revisadas antes de salvar. `admin-ui.js` centraliza os diálogos e a proteção de alterações; `admin-ui.css` define os ajustes específicos para o painel mobile.
+
 Responsável pelo painel administrativo:
 
 - Verificar sessão do administrador
